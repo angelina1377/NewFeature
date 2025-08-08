@@ -1,3 +1,3 @@
 # Project widget
-## Project widget - this is a project for a client's personal account. It is a widget that shows the client's recent successful bank transactions.
-## Installations: Clone the repository: ``` https://github.com/angelina1377/NewFeature.git ```
+## Описание: <br> Project widget - это проект для личного кабинета клиента банка. <br>Это виджет, который отображает последние успешные банковские транзакции клиента.
+## Установка:<br>  [Клонируйте репозиторий](https://github.com/angelina1377/NewProject)<br>                             ### Используемые функции:<br>1) Функция маскировки номера банковской карты - get_mask_card_number <br> 2) Функциф маскировки номера банковского счета - get_mask_account <br> 3) Функция, обрабатывающая информацию о счетах и картах - mask_account_card <br> 4) Функция реверсии даты - get_date <br> 4) Функция возврата нового списка словарей - filter_by_state <br> 5) Функция сортировки даты по убыванию - sort_by_date
