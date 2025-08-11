@@ -8,7 +8,7 @@ def get_mask_card_number(card_number: str) -> str:
     last_part = card_number[-4:]
     """Разбиваем номер карты на части"""
 
-    masked_card_number:str = f"{first_part[:4]} {first_part[4:]}** **** {last_part}"
+    masked_card_number: str = f"{first_part[:4]} {first_part[4:]}** **** {last_part}"
 
     return masked_card_number
 
@@ -23,6 +23,6 @@ def get_mask_account(account_number: str) -> str:
     last_part = account_number[-4:]
     """Разбиваем номер счета на части"""
 
-    masked_account_number = f"{masked_part}{last_part}"
+    masked_account_number: str = f"{masked_part}{last_part}"
 
     return masked_account_number
