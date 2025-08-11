@@ -23,3 +23,12 @@ def mask_account_card(info_number: str) -> str:
 
     return f"{' '.join(list_alpha)} {masked_number}"  # Применяем необходимую маскировку
 
+
+def get_date(y: str) -> str:
+    """Функция по изменению формата строки даты"""
+    year = y[0:4]  # Срез для года
+    month = y[5:7]  # Срез для месяца
+    day = y[8:10]  # Срез для дня
+
+    formatted_date = f"{day}.{month}.{year}"
+    return formatted_date
