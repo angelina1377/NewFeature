@@ -11,3 +11,18 @@ def get_mask_card_number(card_number: str) -> str:
     masked_card_number:str = f"{first_part[:4]} {first_part[4:]}** **** {last_part}"
 
     return masked_card_number
+
+
+def get_mask_account(account_number: str) -> str:
+    """Функция маскировки номера банковского счета"""
+    if not account_number.isdigit() or len(account_number) != 20:
+        raise ValueError("Номер счета должен состоять из 20 цифр.")
+    """Проверка счета на длину и что он состоит из цифр"""
+
+    masked_part = "**"
+    last_part = account_number[-4:]
+    """Разбиваем номер счета на части"""
+
+    masked_account_number = f"{masked_part}{last_part}"
+
+    return masked_account_number
