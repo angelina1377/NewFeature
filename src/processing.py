@@ -1,8 +1,20 @@
-def filter_by_state(data, state ="EXECUTED"):  # Функция нового списка
+def filter_by_state(data: list[dict], state: str ="EXECUTED") -> list[dict]:  # Функция нового списка
+    """
+
+    :param data: Список словарей
+    :param state:  Значение для ключа
+    :return: Список словарей отсортированные по ключу
+    """
     return [item for item in data if item.get("state") == state]
 
 
-def sort_by_date(operations, reverse=True):#Сортировка списка по дате
+def sort_by_date(operations: list[dict], reverse: bool = True) -> list[dict] :#Сортировка списка по дате
+    """
+
+    :param operations: Список словарей
+    :param reverse: Порядок сортировки
+    :return: Возврат отсортированного листа со списком
+    """
     return sorted(operations, key=lambda x:x["date"], reverse=reverse)
 
 transactions = [
