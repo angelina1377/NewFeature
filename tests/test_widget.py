@@ -1,5 +1,3 @@
-
-
 import pytest
 
 from src.widget import get_date, mask_account_card
@@ -28,7 +26,7 @@ def test_mask_account_card(data_number: str, result: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "date, result",
+    "date, expected",
     [
         ("2025-02-10", "10.02.2025"),
         ("2024-02-09", "09.02.2024"),
