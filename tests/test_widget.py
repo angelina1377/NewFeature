@@ -27,11 +27,7 @@ def test_mask_account_card(data_number: str, result: str) -> None:
 
 @pytest.mark.parametrize(
     "date, expected",
-    [
-        ("2025-02-10", "10.02.2025"),
-        ("2024-02-09", "09.02.2024"),
-        ("2022-01-01", "01.01.2022")
-    ],
+    [("2025-02-10", "10.02.2025"), ("2024-02-09", "09.02.2024"), ("2022-01-01", "01.01.2022")],
 )
 def test_get_date(date: str, expected: str) -> None:
     """
@@ -41,5 +37,3 @@ def test_get_date(date: str, expected: str) -> None:
     :return: None
     """
     assert get_date(date) == expected
-
-
