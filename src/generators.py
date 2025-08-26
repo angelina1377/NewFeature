@@ -1,4 +1,4 @@
-from typing import List, Dict, Iterator, Any, Generator
+from typing import List, Dict, Iterator, Any, Generator, Union
 
 # типы для более точной типизации, так как mypy никак не хочет принимать мою работу
 Transaction = Dict[str, Any]
@@ -23,17 +23,18 @@ def filter_by_currency(transactions: List[Transaction], currency_code: str) -> I
         if str(code_op) == currency_code:
             yield tx  # Возвращаем транзакцию через итератор
 
-def transaction_descriptions(list_data: list[dict]) -> Generator:
+
+def transaction_descriptions(list_data: List[Dict[str, object]]) -> Generator[str, None, None]:
     """
 
     :param list_data: список словарей
     :return: генератор с описанием транзакции
     """
-    if not list_data:#Проверка на пустой список
-        raise ValueError("Список транзакций не должен быть пустым")#Выбрасывается исключение
+    if not list_data:  # Проверка на пустой список
+        raise ValueError("Список транзакций не должен быть пустым")  # Выбрасывается исключение
 
-    for transaction in list_data:#Перебираем каждую транзакцию в списке
+    for transaction in list_data:  # Перебираем каждую транзакцию в списке
         try:
-            yield  transaction["description"]#Пытаемся получить описание транзакции
-        except KeyError:#Если ключа "description" нет в словаре
-            yield "Описание отсутствует"#Возвращается сообщение
+            yield transaction["description"]  # Пытаемся получить описание транзакции
+        except KeyError:  # Если ключа "description" нет в словаре
+            yield "Описание отсутствует"  # Возвращается сообщение

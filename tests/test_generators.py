@@ -1,11 +1,13 @@
 import pytest
 
-from src.generators import filter_by_currency
+from src.generators import filter_by_currency, transaction_descriptions
 
-from typing import  List, Dict
-Transaction = Dict[str, object]
+from typing import List, Dict, Generator, Union
+
+
+Transaction = Dict[str, Union[str, int, float, Dict]]
 CurrencyInfo = Dict[str, str]
-OperationAmount = Dict[str, object]
+OperationAmount = Dict[str, Union[str,float]]
 
 
 @pytest.mark.parametrize(
@@ -18,7 +20,7 @@ OperationAmount = Dict[str, object]
         ("XYZ", []),
     ],
 )
-def test_filter_by_currency(currency: str, expected_ids:List[int]) -> None:  # Фильтрация
+def test_filter_by_currency(currency: str, expected_ids: List[int]) -> None:  # Фильтрация
     # Получаем отфильтрованные транзакции
     filtered_transactions: List[Transaction] = list(filter_by_currency(transactions_data, currency))
     # Извлекаем id из полученных транзакций
@@ -61,3 +63,38 @@ transactions_data: List[Transaction] = [
         "operationAmount": {"amount": "2000", "currency": {"name": "RUB", "code": "RUB"}},
     },
 ]
+
+
+def test_transaction_descriptions() -> None:
+    test_transactions: List[Dict[str, Union[str,int]]] = [
+        {"description": "Перевод организации"},
+        {"description": "Перевод со счета на счет"},
+        {"description": "Перевод с карты на карту"},
+        {"amount": 100},  # Транзакция без описания
+    ]
+    # Создаем генератор
+    generator:Generator[str, None, None] = transaction_descriptions(test_transactions)  # Тест корректной работы с данными
+
+    # Проверяем последовательность описаний
+    assert next(generator) == "Перевод организации"
+    assert next(generator) == "Перевод со счета на счет"
+    assert next(generator) == "Перевод с карты на карту"
+    assert next(generator) == "Описание отсутствует"
+
+    # Проверка на пустой список
+    with pytest.raises(ValueError):
+        transaction_descriptions([])
+
+    # Проверка на None
+    with pytest.raises(ValueError):
+        transaction_descriptions(None)
+
+    # Проверка на некорректный тип данных
+    with pytest.raises(TypeError):
+        transaction_descriptions("не список")
+
+
+def test_empty_description() -> None:
+    # Тест обработки отсутствующего ключа
+    data = transaction_descriptions([{"amount": 100}])
+    assert next(data) == "Описание отсутствует"
