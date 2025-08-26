@@ -7,7 +7,7 @@ from typing import List, Dict, Generator, Union
 
 Transaction = Dict[str, Union[str, int, float, Dict]]
 CurrencyInfo = Dict[str, str]
-OperationAmount = Dict[str, Union[str,float]]
+OperationAmount = Dict[str, Union[str, float]]
 
 
 @pytest.mark.parametrize(
@@ -66,14 +66,16 @@ transactions_data: List[Transaction] = [
 
 
 def test_transaction_descriptions() -> None:
-    test_transactions: List[Dict[str, Union[str,int]]] = [
+    test_transactions: List[Dict[str, Union[str, int]]] = [
         {"description": "Перевод организации"},
         {"description": "Перевод со счета на счет"},
         {"description": "Перевод с карты на карту"},
         {"amount": 100},  # Транзакция без описания
     ]
     # Создаем генератор
-    generator:Generator[str, None, None] = transaction_descriptions(test_transactions)  # Тест корректной работы с данными
+    generator: Generator[str, None, None] = transaction_descriptions(
+        test_transactions
+    )  # Тест корректной работы с данными
 
     # Проверяем последовательность описаний
     assert next(generator) == "Перевод организации"
