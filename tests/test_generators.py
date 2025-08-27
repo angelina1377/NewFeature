@@ -1,6 +1,6 @@
 import pytest
 
-from src.generators import filter_by_currency, transaction_descriptions
+from src.generators import filter_by_currency, transaction_descriptions, card_number_generator
 
 from typing import List, Dict, Generator, Union
 
@@ -83,13 +83,17 @@ def test_transaction_descriptions() -> None:
     assert next(generator) == "Перевод с карты на карту"
     assert next(generator) == "Описание отсутствует"
 
-    # Проверка на пустой список
-    with pytest.raises(ValueError):
-        transaction_descriptions([])
+    # Проверка исчерпания генератора
+    with pytest.raises(StopIteration):
+        next(generator)
 
     # Проверка на None
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         transaction_descriptions(None)
+
+    # Проверка на пустой список
+    with pytest.raises(ValueError):
+        next(transaction_descriptions([]))
 
     # Проверка на некорректный тип данных
     with pytest.raises(TypeError):
@@ -100,3 +104,30 @@ def test_empty_description() -> None:
     # Тест обработки отсутствующего ключа
     data = transaction_descriptions([{"amount": 100}])
     assert next(data) == "Описание отсутствует"
+
+
+def test_card_number_generator() -> None:
+    """
+
+    :param start:начальное значение для генерации
+    :param stop: конечное значение для генерации
+    :param result: выдаваемое значение
+    :return: None
+    """
+    assert card_number_generator(1234, 1234) == ["0000 0000 0000 1234"]
+    assert card_number_generator(12345678, 12345678) == ["0000 0000 1234 5678"]
+
+    expected = ["0000 0000 0000 1234", "0000 0000 0000 1235", "0000 0000 0000 1236"]
+    assert card_number_generator(1234, 1236) == expected
+
+    with pytest.raises(ValueError):
+        card_number_generator(0, 0)
+
+    with pytest.raises(ValueError):
+        card_number_generator(10000000000000000, 10000000000000000)
+
+    with pytest.raises(ValueError):
+        card_number_generator(10, 5)
+
+    with pytest.raises(TypeError):
+        card_number_generator(None, 10)

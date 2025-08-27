@@ -1,10 +1,9 @@
-from typing import List, Dict, Iterator, Any, Generator, Union
+from typing import List, Dict, Iterator, Any, Generator
 
 # типы для более точной типизации, так как mypy никак не хочет принимать мою работу
 Transaction = Dict[str, Any]
 CurrencyInfo = Dict[str, str]
 OperationAmount = Dict[str, Any]
-
 
 def filter_by_currency(transactions: List[Transaction], currency_code: str) -> Iterator[Transaction]:
     """
@@ -27,26 +26,38 @@ def filter_by_currency(transactions: List[Transaction], currency_code: str) -> I
 def transaction_descriptions(list_data: List[Dict[str, object]]) -> Generator[str, None, None]:
     """
 
-    :param list_data: список словарей
+    :param list_data: список словарей с транзакциями
     :return: генератор с описанием транзакции
     """
-    if not list_data:  # Проверка на пустой список
-        raise ValueError("Список транзакций не должен быть пустым")  # Выбрасывается исключение
 
-    for transaction in list_data:  # Перебираем каждую транзакцию в списке
-        try:
-            yield transaction["description"]  # Пытаемся получить описание транзакции
-        except KeyError:  # Если ключа "description" нет в словаре
-            yield "Описание отсутствует"  # Возвращается сообщение
+    if not isinstance(list_data, list):
+        raise TypeError("Ожидается список транзакций")
+
+    def generator():
+        if len(list_data) == 0:
+            raise ValueError("Список транзакий не должен быть пустым")
+        for transaction in list_data:  # Перебираем каждую транзакцию в списке
+            if not isinstance(transaction, dict):
+                raise TypeError("Элемент списка не является словарем")
+
+            yield transaction.get("description", "Описание отсутствует")
+    return generator()
+
 
 
 def card_number_generator(start: int, stop: int) -> list:
     """
 
     :param start:начальное значение
-    :param end:конечное значение
-    :return:генератор
+    :param stop:конечное значение
+    :return:список номеров
     """
+
+# Проверка типов входных данных
+    if not isinstance(start, int):
+        raise TypeError("start должен быть целым числом")
+    if not isinstance(stop, int):
+        raise TypeError("stop должен быть целым числом")
 
     # Проверяем корректность входных данных
     if not (1 <= start <= 9999999999999999):
@@ -62,9 +73,9 @@ def card_number_generator(start: int, stop: int) -> list:
         zfill_res = str(i_range).zfill(16)
         temp_data = []
 
-    for i in range(0, len(zfill_res), 4):
-        temp_data.append(zfill_res[i : i + 4])
+        for i in range(0, len(zfill_res), 4):
+            temp_data.append(zfill_res[i : i + 4])
 
-    result.append(" ".join(temp_data))
+        result.append(" ".join(temp_data))
 
     return result
