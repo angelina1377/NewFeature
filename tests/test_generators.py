@@ -1,9 +1,8 @@
+from typing import Dict, Generator, List, Union
+
 import pytest
 
 from src.generators import filter_by_currency, transaction_descriptions
-
-from typing import List, Dict, Generator, Union
-
 
 Transaction = Dict[str, Union[str, int, float, Dict]]
 CurrencyInfo = Dict[str, str]
