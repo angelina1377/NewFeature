@@ -1,15 +1,10 @@
-from typing import (
-    Any,
-    Dict,
-    Generator,
-    Iterator,
-    List
-)
+from typing import Any, Dict, Generator, Iterator, List
 
 # типы для более точной типизации, так как mypy никак не хочет принимать мою работу
 Transaction = Dict[str, Any]
 CurrencyInfo = Dict[str, str]
 OperationAmount = Dict[str, Any]
+
 
 def filter_by_currency(transactions: List[Transaction], currency_code: str) -> Iterator[Transaction]:
     """
@@ -36,19 +31,12 @@ def transaction_descriptions(list_data: List[Dict[str, object]]) -> Generator[st
     :return: генератор с описанием транзакции
     """
 
-    if not isinstance(list_data, list):
-        raise TypeError("Ожидается список транзакций")
+    if len(list_data) == 0:
+        raise ValueError("Список транзакций пуст")
 
-    def generator():
-        if len(list_data) == 0:
-            raise ValueError("Список транзакий не должен быть пустым")
-        for transaction in list_data:  # Перебираем каждую транзакцию в списке
-            if not isinstance(transaction, dict):
-                raise TypeError("Элемент списка не является словарем")
-
-            yield transaction.get("description", "Описание отсутствует")
-    return generator()
-
+    for transaction in list_data:  # Перебираем каждую транзакцию в списке
+        description = transaction.get("description", "Описание отсутствует")
+        yield description
 
 
 def card_number_generator(start: int, stop: int) -> list:
@@ -59,7 +47,7 @@ def card_number_generator(start: int, stop: int) -> list:
     :return:список номеров
     """
 
-# Проверка типов входных данных
+    # Проверка типов входных данных
     if not isinstance(start, int):
         raise TypeError("start должен быть целым числом")
     if not isinstance(stop, int):

@@ -1,17 +1,8 @@
-from typing import (
-    Dict,
-    Generator,
-    List,
-    Union
-)
+from typing import Dict, Generator, List, Union
 
 import pytest
 
-from src.generators import (
-    card_number_generator,
-    filter_by_currency,
-    transaction_descriptions
-)
+from src.generators import card_number_generator, filter_by_currency, transaction_descriptions
 
 Transaction = Dict[str, Union[str, int, float, Dict]]
 CurrencyInfo = Dict[str, str]
@@ -95,17 +86,9 @@ def test_transaction_descriptions() -> None:
     with pytest.raises(StopIteration):
         next(generator)
 
-    # Проверка на None
-    with pytest.raises(TypeError):
-        transaction_descriptions(None)
-
     # Проверка на пустой список
     with pytest.raises(ValueError):
         next(transaction_descriptions([]))
-
-    # Проверка на некорректный тип данных
-    with pytest.raises(TypeError):
-        transaction_descriptions("не список")
 
 
 def test_empty_description() -> None:
