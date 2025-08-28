@@ -1,4 +1,10 @@
-from typing import List, Dict, Iterator, Any, Generator
+from typing import (
+    Any,
+    Dict,
+    Generator,
+    Iterator,
+    List
+)
 
 # типы для более точной типизации, так как mypy никак не хочет принимать мою работу
 Transaction = Dict[str, Any]
