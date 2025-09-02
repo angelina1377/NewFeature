@@ -17,6 +17,8 @@ poetry install
  * masks.py 
  * widget.py 
  * processing.py
+ * generators
+ * decorators
 ## Модуль masks.py   
  Модуль для маскировки номера пользовательского счета или счета в банке
 ## Методы 
