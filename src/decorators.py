@@ -10,20 +10,27 @@ def log(filename=None):
         """ Внутренний декоратор, который оборачивает исходную функцию"""
         @wraps(func)
         def wrapper(*args, **kwargs):  # Обертка
-            print(f"Начало выполнения функции'{func.__name__}' с аргументами args={args}, kwargs={kwargs}")
+            def write_log(message: str):
+                if filename:
+                    with open(filename, 'a', encoding='utf-8') as f:
+                        f.write(message + '\n')
+                else:
+                    print(message)
+            write_log(f"Начало выполнения функции '{func.__name__}' с аргументами args={args}, kwargs={kwargs}")
+
 
             try:
                 # Вызываем исходную функцию с переданными аргументами
                 result = func(*args, **kwargs)
                 # Логируем успешное завершение функции и результат
-                print(f"Функция '{func.__name__}' успешно завершилась с результатом: {result}")
+                write_log(f"Функция '{func.__name__}' успешно завершилась с результатом: {result}")
                 return result
             except Exception as e:
                 # В случае ошибки логируем тип ошибки и сообщение
                 error_type = type(e).__name__   # Получаем название типа исключения
-                print(f"Ошибка в функции'{func.__name__}' : {error_type}."
+                write_log(f"Ошибка в функции'{func.__name__}' : {error_type}."
                       f"Входные параметры args={args}, kwargs={kwargs}")
-                print(f"Сообщение об ошибке: {e}")
+                write_log(f"Сообщение об ошибке: {e}")
                 # После логирования ошибка пробрасывается дальше
                 raise
         return wrapper
