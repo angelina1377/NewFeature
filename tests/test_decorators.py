@@ -20,7 +20,10 @@ def test_decorator_capsys(capsys: CaptureFixture[str]) -> None:
     captured = capsys.readouterr()
 
     # Проверяем, что лог успешного вызова есть
-    assert "num_div ok" in captured.out
+    assert "Функция 'num_div' успешно завершилась" in captured.out
 
     # Проверяем, что лог ошибки есть
     assert "ZeroDivisionError" in captured.out or "ZeroDivisionError" in captured.err
+
+    #Проверка начала выполнения функции
+    assert "Начало выполнения функции 'num_div'" in captured.out
