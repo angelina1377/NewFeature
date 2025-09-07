@@ -1,5 +1,6 @@
+from unittest.mock import Mock, patch
+
 import pytest
-from unittest.mock import patch, Mock
 
 import src.external_api as external_api
 
@@ -26,6 +27,7 @@ def test_convert_to_rub_success(mock_get):
     assert isinstance(res, float)
     assert res == 123.45
 
+
 @patch("src.external_api.requests.get")
 def test_convert_to_rub_with_date_param(mock_get):
     mock_get.return_value = make_resp(json_data={"result": 50})
@@ -38,16 +40,19 @@ def test_convert_to_rub_with_date_param(mock_get):
     assert kwargs["params"]["date"] == "2024-01-01"
     assert res == 50.0
 
+
 def test_convert_to_rub_no_api_key_raises():
     # Гарантируем, что API_KEY пустой
     with patch.object(external_api, "API_KEY", None):
         with pytest.raises(RuntimeError, match="API key not set"):
             external_api.convert_to_rub("USD", 1.0)
 
+
 def test_convert_to_rub_unsupported_currency():
     with patch.object(external_api, "API_KEY", "k"):
         with pytest.raises(ValueError, match="Unsupported currency"):
             external_api.convert_to_rub("GBP", 1.0)
+
 
 @patch("src.external_api.requests.get")
 def test_convert_to_rub_http_error(mock_get):
@@ -55,6 +60,7 @@ def test_convert_to_rub_http_error(mock_get):
     with patch.object(external_api, "API_KEY", "k"):
         with pytest.raises(RuntimeError, match="Exchange API returned status 500"):
             external_api.convert_to_rub("USD", 1.0)
+
 
 @patch("src.external_api.requests.get")
 def test_convert_to_rub_invalid_json(mock_get):
@@ -64,12 +70,14 @@ def test_convert_to_rub_invalid_json(mock_get):
         with pytest.raises(RuntimeError, match="Invalid JSON"):
             external_api.convert_to_rub("USD", 1.0)
 
+
 @patch("src.external_api.requests.get")
 def test_convert_to_rub_no_result_field(mock_get):
     mock_get.return_value = make_resp(json_data={"not_result": 1})
     with patch.object(external_api, "API_KEY", "k"):
         with pytest.raises(RuntimeError, match="No result field"):
             external_api.convert_to_rub("USD", 1.0)
+
 
 @patch("src.external_api.requests.get")
 def test_convert_to_rub_invalid_result_value(mock_get):
@@ -84,13 +92,7 @@ def test_transaction_amount_in_rub_with_operationAmount_calls_api(mock_get):
     # Возвращаем 100 RUB в ответ на вызов API
     mock_get.return_value = make_resp(json_data={"result": 100.0})
     with patch.object(external_api, "API_KEY", "k"):
-        tx = {
-            "operationAmount": {
-                "amount": "10.0",
-                "currency": {"code": "USD"}
-            },
-            "date": "2024-01-01"
-        }
+        tx = {"operationAmount": {"amount": "10.0", "currency": {"code": "USD"}}, "date": "2024-01-01"}
         res = external_api.transaction_amount_in_rub(tx)
     assert res == 100.0
     assert mock_get.called  # убедимся, что внешний вызов сделан
@@ -99,12 +101,7 @@ def test_transaction_amount_in_rub_with_operationAmount_calls_api(mock_get):
 def test_transaction_amount_in_rub_rub_no_api_call():
     # Для RUB вызов convert_to_rub не должен обращаться к requests.get
     with patch("src.external_api.requests.get") as mock_get:
-        tx = {
-            "operationAmount": {
-                "amount": "42.5",
-                "currency": {"code": "RUB"}
-            }
-        }
+        tx = {"operationAmount": {"amount": "42.5", "currency": {"code": "RUB"}}}
         res = external_api.transaction_amount_in_rub(tx)
     assert res == 42.5
     mock_get.assert_not_called()
@@ -113,6 +110,7 @@ def test_transaction_amount_in_rub_rub_no_api_call():
 def test_transaction_missing_fields():
     with pytest.raises(KeyError):
         external_api.transaction_amount_in_rub({})
+
 
 def test_transaction_invalid_amount_value():
     tx = {"amount": "not-a-number", "currency": "USD"}

@@ -1,6 +1,7 @@
 import os
-import requests
 from typing import Dict, Optional
+
+import requests
 
 API_KEY = os.getenv("API_KEY")
 API_URL = "https://api.apilayer.com/exchangerates_data/convert"
@@ -88,13 +89,7 @@ def transaction_amount_in_rub(transaction: Dict) -> float:
 
 
 if __name__ == "__main__":
-    tx_example = {
-        "operationAmount": {
-            "amount": "12.34",
-            "currency": {"code": "USD"}
-        },
-        "date": "2024-01-01"
-    }
+    tx_example = {"operationAmount": {"amount": "12.34", "currency": {"code": "USD"}}, "date": "2024-01-01"}
     try:
         print("Сумма в RUB:", transaction_amount_in_rub(tx_example))
     except Exception as e:
