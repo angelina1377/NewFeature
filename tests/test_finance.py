@@ -1,87 +1,65 @@
-import os
+import csv
+from unittest.mock import mock_open, patch , MagicMock
+import pytest
 import pandas as pd
 from src.finance import read_finance_csv_operation
 from src.finance import read_finance_excel_operation
 
-
-def test_read_finance_csv_operation_basic():  # Тест для базового csv
-    # Создаем содержимое csv файла в виде строки
-    csv_content = "date;amount;description\n2024-01-01;1000;Salary\n2024-01-02;-50;Groceries\n"
-    file_path = "test_finance.csv"  # Задаем имя файла
-    # Создаем файл и записываем в него содержимое
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(csv_content)
-
-    try:
-        # Вызываем тестируемую функцию
-        result = read_finance_csv_operation(file_path)
-        # Создаем ожидаемый резудьтат
-        expected = [
-            {"date": "2024-01-01", "amount": "1000", "description": "Salary"},
-            {"date": "2024-01-02", "amount": "-50", "description": "Groceries"},
-        ]
-        # Проверяем, что результат совпадает с ожидаемым
-        assert result == expected
-    finally:
-        # Удаляем созданный файл после теста
-        os.remove(file_path)
-
-
-def test_read_finance_csv_operation_empty():  # Тест для пустого csv
-    # Создаем пустой csv файл с заголовками
-    csv_content = "date;amount;description\n"
-    file_path = "test_finance_empty.csv"
-    # Создаем файл и записываем в него содержимое
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(csv_content)
-
-    try:
-        # Вызываем тестируемую функцию
-        result = read_finance_csv_operation(file_path)
-        # Проверяем, что результат пустой
-        assert result == []
-    finally:
-        # Удаляем созданный файл после теста
-        os.remove(file_path)
-
-
-def test_read_finance_excel_operation_basic(tmp_path):
-    # Создаём тестовый DataFrame
-    df = pd.DataFrame(
-        [
-            {"date": "2024-01-01", "amount": 100, "description": "salary"},
-            {"date": "2024-01-02", "amount": -20, "description": "coffee"},
-        ]
+def test_read_finance_csv_operation_reads_csv_until_end():
+    # Пример содержимого CSV; каждый ряд — словарь, как DictReader
+    csv_content = (
+        "date;amount;description\n"
+        "2025-01-01;100;income\n"
+        "2025-01-02;200;expense\n"
     )
-    # Создаем путь к файлу
-    file_path = tmp_path / "test_finance.xlsx"
-    # Сохраняем DataFrame в Excel файл
-    df.to_excel(file_path, index=False)
-    # Вызываем тестируемую функцию
-    result = read_finance_excel_operation(str(file_path))
-    # Проверяем результат
-    assert result == df.to_dict("records")
+    # Ожидаемые результаты после чтения
+    expected = [
+        {'date': '2025-01-01', 'amount': '100', 'description': 'income'},
+        {'date': '2025-01-02', 'amount': '200', 'description': 'expense'},
+    ]
+
+    # Мокаем open и передаем содержимое файла
+    m = mock_open(read_data=csv_content)
+
+    with patch('builtins.open', m):
+        with patch('csv.DictReader') as mock_dict_reader:
+            # Задаем поведение DictReader: он должен возвращать итератор по словарям
+            mock_dict_reader.return_value.__iter__.return_value = expected
+            # Вызываем функцию
+            result = read_finance_csv_operation('dummy.csv')
+
+            # Проверяем, что результат совпадает с ожидаемым
+            assert result == expected
+
+            # Дополнительно можно проверить, что DictReader был создан с правильным delimiter
+            mock_dict_reader.assert_called_once()
+            args, kwargs = mock_dict_reader.call_args
+            assert kwargs.get('delimiter') == ';'
 
 
-def test_read_finance_excel_operation_empty(tmp_path):
-    # Создаем пустой DataFrame с заголовками
-    df = pd.DataFrame(columns=["date", "amount", "description"])
-    # Создаем путь к файлу
-    file_path = tmp_path / "test_finance_empty.xlsx"
-    # Сохраняем пустой DataFrame в Excel
-    df.to_excel(file_path, index=False)
-    # Проверяем результат
-    result = read_finance_excel_operation(str(file_path))
-    assert result == []
+def test_read_finance_excel_operation_success():
+    # Подготовка данных DataFrame, который вернет pd.read_excel
+    df = pd.DataFrame([
+        {"date": "2025-01-01", "amount": 100, "description": "income"},
+        {"date": "2025-01-02", "amount": 200, "description": "expense"},
+    ])
+    # Мок для результата to_dict("records")
+    expected = [
+        {"date": "2025-01-01", "amount": 100, "description": "income"},
+        {"date": "2025-01-02", "amount": 200, "description": "expense"},
+    ]
 
+    with patch('pandas.read_excel', return_value=df) as mock_read_excel:
+        result = read_finance_excel_operation('dummy.xlsx')
+        assert result == expected
+        mock_read_excel.assert_called_once_with('dummy.xlsx')
 
-def test_read_finance_excel_operation_missing_file():
-    # Проверяем обработку отсутствующего файла
-    result = read_finance_excel_operation("non_existent_file.xlsx")
-    assert result == []  # Функция должна вернуть пустой список
+def test_read_finance_excel_operation_file_not_found():
+    with patch('pandas.read_excel', side_effect=FileNotFoundError):
+        result = read_finance_excel_operation('missing.xlsx')
+        assert result == []
 
-
-# if __name__ == "__main__":
-# test_read_finance_csv_operation_basic()
-# test_read_finance_csv_operation_empty()
-# print("All tests passed")
+def test_read_finance_excel_operation_other_exception():
+    with patch('pandas.read_excel', side_effect=Exception("boom")):
+        result = read_finance_excel_operation('error.xlsx')
+        assert result == []

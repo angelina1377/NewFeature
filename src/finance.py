@@ -12,9 +12,8 @@ def read_finance_csv_operation(file_name: str) -> List[Dict[str,Any]]:
             result.append(row)
     return result
 
-
 def read_finance_excel_operation(file_path: str) -> List[Dict[str,Any]]:
-    # Функция считывания
+# Функция считывания Excel файла
     try:
         excel_data = pd.read_excel(file_path)
         return excel_data.to_dict("records")
@@ -22,7 +21,3 @@ def read_finance_excel_operation(file_path: str) -> List[Dict[str,Any]]:
         return []
     except Exception as e:
         return []
-
-
-# print(read_finance_csv_operation("./data/transactions.csv"))
-# print(read_finance_excel_operation("../data/transactions_excel.xlsx"))
