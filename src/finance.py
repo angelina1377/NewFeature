@@ -20,4 +20,4 @@ def read_finance_excel_operation(file_path: str) -> list:
     except Exception as e:
         return []
 #print(read_finance_csv_operation("./data/transactions.csv"))
-print(read_finance_excel_operation("../data/transactions_excel.xlsx"))
+#print(read_finance_excel_operation("../data/transactions_excel.xlsx"))
