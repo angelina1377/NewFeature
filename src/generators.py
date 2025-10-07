@@ -30,10 +30,16 @@ def transaction_descriptions(list_data: List[Dict[str, object]]) -> Generator[st
     :param list_data: список словарей
     :return: генератор с описанием транзакции
     """
-    if not list_data:  # Проверка на пустой список
-        raise ValueError("Список транзакций не должен быть пустым")  # Выбрасывается исключение
+    if list_data is None:  # Проверка на None
+        raise ValueError("Список транзакций не должен быть None")  # Выбрасывается исключение
+    if not isinstance(list_data, list):
+        raise TypeError("list_data должен быть списком")
+    if  not list_data: # Проверка на пустой список
+        raise ValueError("Список транзакций не должен быть пустым")
 
-    for transaction in list_data:  # Перебираем каждую транзакцию в списке
+    for transaction in list_data: # Перебираем каждую транзакцию в списке
+        if not isinstance(transaction, dict):
+            raise TypeError("Элементы списка должны быть словарями")
         try:
             yield transaction["description"]  # Пытаемся получить описание транзакции
         except KeyError:  # Если ключа "description" нет в словаре

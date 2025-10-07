@@ -8,7 +8,7 @@ Transaction = Dict[str, Union[str, int, float, Dict]]
 CurrencyInfo = Dict[str, str]
 OperationAmount = Dict[str, Union[str, float]]
 
-
+# Фильтрация по валюте
 @pytest.mark.parametrize(
     "currency, expected_ids",
     [
@@ -63,7 +63,7 @@ transactions_data: List[Transaction] = [
     },
 ]
 
-
+# Тест для генератора описаний
 def test_transaction_descriptions() -> None:
     test_transactions: List[Dict[str, Union[str, int]]] = [
         {"description": "Перевод организации"},
@@ -83,8 +83,9 @@ def test_transaction_descriptions() -> None:
     assert next(generator) == "Описание отсутствует"
 
     # Проверка на пустой список
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError) as excinfo:
         transaction_descriptions([])
+    assert "Список транзакций не должен быть пустым" in str(excinfo.value)
 
     # Проверка на None
     with pytest.raises(ValueError):
@@ -94,7 +95,7 @@ def test_transaction_descriptions() -> None:
     with pytest.raises(TypeError):
         transaction_descriptions("не список")
 
-
+# Дополнительный тест для отсутсвующего описания
 def test_empty_description() -> None:
     # Тест обработки отсутствующего ключа
     data = transaction_descriptions([{"amount": 100}])
