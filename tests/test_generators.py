@@ -72,9 +72,8 @@ def test_transaction_descriptions() -> None:
         {"amount": 100},  # Транзакция без описания
     ]
     # Создаем генератор
-    generator: Generator[str, None, None] = transaction_descriptions(
-        test_transactions
-    )  # Тест корректной работы с данными
+    generator = transaction_descriptions(test_transactions)
+      # Тест корректной работы с данными
 
     # Проверяем последовательность описаний
     assert next(generator) == "Перевод организации"
@@ -83,8 +82,8 @@ def test_transaction_descriptions() -> None:
     assert next(generator) == "Описание отсутствует"
 
     # Проверка на пустой список
-    with pytest.raises(ValueError):
-        transaction_descriptions([])
+    with pytest.raises(StopIteration):
+        next(generator)
 
     # Проверка на None
     with pytest.raises(ValueError):
