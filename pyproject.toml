@@ -25,6 +25,7 @@ mypy = "^1.17.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest-cov = "^6.2.1"
+isort = "^6.0.1"
 
 [tool.black]
 line-length = 119
@@ -46,6 +47,8 @@ exclude = '''
 
 [tool.isort]
 line_length = 119
+multi_line_output = 3
+force_grid_wrap = 2
 
 [tool.mypy]
 disallow_untyped_defs = true
